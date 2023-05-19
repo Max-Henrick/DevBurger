@@ -8,23 +8,28 @@ class LoginController {
       password: Yup.string().required(),
     })
 
-    const validatePasswordOrEmail = () => {
+    if (!(await schema.isValid(request.body))) {
       return response
-        .status(401)
+        .status(400)
         .json({ error: 'Verifique se email ou senha estão corretos' })
     }
-
-    if (!(await schema.isValid(request.body))) validatePasswordOrEmail()
-
     const { email, password } = request.body
 
     const user = await User.findOne({
       where: { email },
     })
 
-    if (!user) validatePasswordOrEmail()
+    if (!user) {
+      return response
+        .status(400)
+        .json({ error: 'Verifique se email ou senha estão corretos' })
+    }
 
-    if (!(await user.checkPassword(password))) validatePasswordOrEmail()
+    if (!(await user.checkPassword(password))) {
+      return response
+        .status(401)
+        .json({ error: 'Verifique se email ou senha estão corretos' })
+    }
 
     return response.json({
       id: user.id,
