@@ -1,6 +1,8 @@
 import * as Yup from 'yup'
 import Product from '../models/Product'
 import Category from '../models/Category'
+import Order from '../schemas/Order'
+import User from '../models/User'
 
 class OrderController {
   async store(request, response) {
@@ -59,9 +61,50 @@ class OrderController {
         name: request.userName,
       },
       products: editedProduct,
+      status: 'Pedido realizado',
     }
 
-    return response.status(201).json(order)
+    const saveOrder = await Order.create(order)
+
+    return response.status(201).json(saveOrder)
+  }
+
+  async index(request, response) {
+    const orders = await Order.find()
+
+    return response.json(orders)
+  }
+
+  async update(request, response) {
+    const schema = Yup.object().shape({
+      status: Yup.string().required(),
+    })
+
+    try {
+      await schema.validateSync(request.body, { abortEarly: false })
+    } catch (error) {
+      return response.status(400).json({ error: error.errors })
+    }
+
+    const { admin: isAdmin } = await User.findByPk(request.userId)
+
+    if (!isAdmin) {
+      return response.status(401).json()
+    }
+
+    const { id } = request.params
+    const { status } = request.body
+
+    try {
+      await Order.updateOne({ _id: id }, { status })
+    } catch (error) {
+      console.log(error)
+      return response
+        .status(400)
+        .json({ error: 'Número do pedido ou status incorretos' })
+    }
+
+    return response.json({ menssage: 'Status atualizado com sucesso' })
   }
 }
 
