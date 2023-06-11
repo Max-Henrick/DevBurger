@@ -33,7 +33,7 @@ class LoginController {
         .json({ error: 'Verifique se email ou senha estão corretos' })
     }
 
-    return response.json({
+    return response.status(201).json({
       id: user.id,
       name: user.name,
       email,

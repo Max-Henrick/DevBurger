@@ -24,7 +24,7 @@ class UserController {
     })
 
     if (validateEmail) {
-      return response.status(400).json({ Error: 'Email já cadastrado' })
+      return response.status(409).json({ Error: 'Email já cadastrado' })
     }
 
     const user = User.create({
