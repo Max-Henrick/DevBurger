@@ -5,7 +5,7 @@ export default (request, response, next) => {
   const authToken = request.headers.authorization
 
   if (!authToken) {
-    return response.status(401).json({ error: 'Usuário não autorizado' })
+    return response.status(401).json({ error: 'Token not provide' })
   }
 
   const token = authToken.split(' ')[1]
@@ -22,6 +22,6 @@ export default (request, response, next) => {
       return next()
     })
   } catch (err) {
-    return response.status(401).json({ error: 'Usuário não autorizado' })
+    return response.status(401).json({ error: 'Invalid token' })
   }
 }
