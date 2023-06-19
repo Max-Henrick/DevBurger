@@ -5,7 +5,9 @@ export default (request, response, next) => {
   const authToken = request.headers.authorization
 
   if (!authToken) {
-    return response.status(401).json({ error: 'Token not provide' })
+    return response
+      .status(401)
+      .json({ error: 'Atrapalha a imagem no front-end' })
   }
 
   const token = authToken.split(' ')[1]
